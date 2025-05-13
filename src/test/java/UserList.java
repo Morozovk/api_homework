@@ -1,3 +1,5 @@
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -5,6 +7,12 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 
 public class UserList {
+
+    @BeforeAll
+    public static void setUp() {
+        RestAssured.baseURI = "https://reqres.in";
+        RestAssured.basePath = "/api";
+    }
 
     String apiKey = "reqres-free-v1";
 
@@ -15,7 +23,8 @@ public class UserList {
                 .header("x-api-key", apiKey)
 
                 .when()
-                .get("https://reqres.in/api/users?page=2")
+                .queryParam("page", "2")
+                .get("/users")
 
                 .then()
                 .log().status()
@@ -35,7 +44,7 @@ public class UserList {
                 .contentType(JSON)
 
                 .when()
-                .post("https://reqres.in/api/users")
+                .post("/users")
 
                 .then()
                 .log().status()
@@ -56,7 +65,7 @@ public class UserList {
                 .contentType(JSON)
 
                 .when()
-                .put("https://reqres.in/api/users/2")
+                .put("/users/2")
 
                 .then()
                 .log().status()

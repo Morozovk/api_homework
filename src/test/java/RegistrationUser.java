@@ -1,3 +1,5 @@
+import io.restassured.RestAssured;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -6,6 +8,12 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class RegistrationUser {
+
+    @BeforeAll
+    public static void setUp() {
+        RestAssured.baseURI = "https://reqres.in";
+        RestAssured.basePath = "/api";
+    }
 
     String apiKey = "reqres-free-v1";
 
@@ -20,7 +28,7 @@ public class RegistrationUser {
                 .contentType(JSON)
 
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("/register")
 
                 .then()
                 .log().status()
@@ -41,7 +49,7 @@ public class RegistrationUser {
                 .contentType(JSON)
 
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("/register")
 
                 .then()
                 .log().status()
@@ -62,7 +70,7 @@ public class RegistrationUser {
                 .contentType(JSON)
 
                 .when()
-                .post("https://reqres.in/api/register")
+                .post("/register")
 
                 .then()
                 .log().status()
