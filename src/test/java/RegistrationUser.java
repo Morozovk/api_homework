@@ -7,13 +7,7 @@ import static io.restassured.http.ContentType.JSON;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
-public class RegistrationUser {
-
-    @BeforeAll
-    public static void setUp() {
-        RestAssured.baseURI = "https://reqres.in";
-        RestAssured.basePath = "/api";
-    }
+public class RegistrationUser extends TestBase {
 
     String apiKey = "reqres-free-v1";
 
