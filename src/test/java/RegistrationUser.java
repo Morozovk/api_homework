@@ -1,76 +1,86 @@
-import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
+import models.ErrorResponseBodyModel;
+import models.RegisterBodyModel;
+import models.RegisterResponseBodyModel;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.registrationSuccessfulSpec.registrationRequestSpec;
+import static specs.registrationSuccessfulSpec.registrationResponseSpec;
+import static specs.registrationUnSuccessfulSpec.*;
 
 public class RegistrationUser extends TestBase {
 
     String apiKey = "reqres-free-v1";
 
-    @Test
-    void registrationSuccessfulTest() {
-        String registerUser = "{\"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\"}";
 
-        given()
-                .log().uri()
+    @Test
+    void registrationSuccessfulLombokTest() {
+
+        RegisterBodyModel authData = new RegisterBodyModel();
+        authData.setEmail("eve.holt@reqres.in");
+        authData.setPassword("pistol");
+
+        RegisterResponseBodyModel response = step("Отправляем запрос", () ->
+                given(registrationRequestSpec)
                 .header("x-api-key", apiKey)
-                .body(registerUser)
-                .contentType(JSON)
+                .body(authData)
 
                 .when()
                 .post("/register")
 
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("id", notNullValue())
-                .body("token", notNullValue());
+                .spec(registrationResponseSpec)
+                .extract().as(RegisterResponseBodyModel.class));
+
+        step("Проверяем ответ", () -> {
+            assertEquals("QpwL5tke4Pnpja7X4", response.getToken());
+            assertEquals("4", response.getId());
+        });
     }
 
     @Test
-    void registrationUnSuccessfulNotPasswordTest() {
-        String failRegisterUser = "{\"email\": \"eve.holt@reqres.in\"}";
+    void registrationUnSuccessfulNotPasswordLombokTest() {
+        RegisterBodyModel authData = new RegisterBodyModel();
+        authData.setEmail("eve.holt@reqres.in");
 
-        given()
-                .log().uri()
+        ErrorResponseBodyModel responce = step("Отправляем запрос", () ->
+                given(registrationRequestUnSuccessfulSpec)
                 .header("x-api-key", apiKey)
-                .body(failRegisterUser)
-                .contentType(JSON)
+                .body(authData)
 
                 .when()
                 .post("/register")
 
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Missing password"));
+                .spec(registrationResponseUnSuccessfulSpec)
+                .extract().as(ErrorResponseBodyModel.class));
+
+        step("Проверяем ответ", () -> {
+            assertEquals("Missing password", responce.getError());
+        });
     }
 
 
     @Test
-    void registrationUnSuccessfulNotEmailTest() {
+    void registrationUnSuccessfulNotEmailLombokTest() {
         String failRegisterUser = "{}";
 
-        given()
-                .log().uri()
+        ErrorResponseBodyModel responce = step("Отправляем запрос", () ->
+                given(registrationRequestUnSuccessfulSpec)
                 .header("x-api-key", apiKey)
                 .body(failRegisterUser)
-                .contentType(JSON)
 
                 .when()
                 .post("/register")
 
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(400)
-                .body("error", is("Missing email or username"));
-    }
+                .spec(registrationResponseUnSuccessfulSpec)
+                .extract().as(ErrorResponseBodyModel.class));
 
+        step("Проверяем ответ", () -> {
+            assertEquals("Missing email or username", responce.getError());
+        });
+    }
 }
