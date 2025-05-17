@@ -7,9 +7,11 @@ import org.junit.jupiter.api.Test;
 import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
+import static specs.createUsersSpec.RequestCreateUsersSpec;
+import static specs.createUsersSpec.createUsersResponseSpec;
+import static specs.updateUserSpec.RequestUpdateUsersSpec;
+import static specs.updateUserSpec.updateUsersResponseSpec;
 
 public class UserList extends TestBase {
 
@@ -47,22 +49,16 @@ public class UserList extends TestBase {
         authData.setName("Kir");
         authData.setJob("QA");
 
-        UserBodyModel responce = step("Отправляем запрос", () -> given()
-                .filter(withCustomTemplates())
-                .log().uri()
+        UserBodyModel responce = step("Отправляем запрос", () ->
+                given(RequestCreateUsersSpec)
                 .header("x-api-key", apiKey)
                 .body(authData)
-                .contentType(JSON)
 
                 .when()
                 .post("/users")
 
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(201)
-                .body("name", is("Kir"))
-                .body("job", is("QA"))
+                .spec(createUsersResponseSpec)
                 .extract().as(UserBodyModel.class));
 
         step("Проверяем ответ", () -> {
@@ -79,22 +75,16 @@ public class UserList extends TestBase {
         authData.setName("Kirill");
         authData.setJob("QA Engineer");
 
-        UserBodyModel responce = step("Отправляем запрос", () -> given()
-                .filter(withCustomTemplates())
-                .log().uri()
+        UserBodyModel responce = step("Отправляем запрос", () ->
+                given(RequestUpdateUsersSpec)
                 .header("x-api-key", apiKey)
                 .body(authData)
-                .contentType(JSON)
 
                 .when()
                 .put("/users/2")
 
                 .then()
-                .log().status()
-                .log().body()
-                .statusCode(200)
-                .body("name", is("Kirill"))
-                .body("job", is("QA Engineer"))
+                .spec(updateUsersResponseSpec)
                 .extract().as(UserBodyModel.class));
 
         step("Проверяем ответ", () -> {
