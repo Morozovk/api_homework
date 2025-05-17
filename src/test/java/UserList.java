@@ -2,6 +2,7 @@ import models.UserBodyModel;
 import models.UserListBodyModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static helpers.CustomAllureListener.withCustomTemplates;
@@ -18,6 +19,7 @@ public class UserList extends TestBase {
     String apiKey = "reqres-free-v1";
 
     @DisplayName("Не работающий тест")
+    @Tag ("Smoke")
     @Disabled
     @Test
     void amountUsersTest() {
@@ -42,6 +44,7 @@ public class UserList extends TestBase {
     }
     // требуется подсказка, как лучше реализовать
 
+    @Tag ("Smoke")
     @Test
     void createUsersTest() {
 
@@ -69,6 +72,7 @@ public class UserList extends TestBase {
         });
     }
 
+    @Tag ("Smoke")
     @Test
     void updateUserTest() {
         UserBodyModel authData = new UserBodyModel();

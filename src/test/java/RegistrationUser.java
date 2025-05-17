@@ -1,6 +1,7 @@
 import models.ErrorResponseBodyModel;
 import models.RegisterBodyModel;
 import models.RegisterResponseBodyModel;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
@@ -14,7 +15,7 @@ public class RegistrationUser extends TestBase {
 
     String apiKey = "reqres-free-v1";
 
-
+    @Tag("Smoke")
     @Test
     void registrationSuccessfulLombokTest() {
 
@@ -40,6 +41,7 @@ public class RegistrationUser extends TestBase {
         });
     }
 
+    @Tag ("Smoke")
     @Test
     void registrationUnSuccessfulNotPasswordLombokTest() {
         RegisterBodyModel authData = new RegisterBodyModel();
@@ -62,7 +64,7 @@ public class RegistrationUser extends TestBase {
         });
     }
 
-
+    @Tag ("Smoke")
     @Test
     void registrationUnSuccessfulNotEmailLombokTest() {
         String failRegisterUser = "{}";
