@@ -1,4 +1,6 @@
-import models.UserBodyModel;
+import models.UserRequestBodyModel;
+import models.CreateUserResponseBodyModel;
+import models.ResponseUserUpdateBodyModel;
 import models.UserListBodyModel;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -9,10 +11,9 @@ import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
-import static specs.createUsersSpec.RequestCreateUsersSpec;
-import static specs.createUsersSpec.createUsersResponseSpec;
-import static specs.updateUserSpec.RequestUpdateUsersSpec;
-import static specs.updateUserSpec.updateUsersResponseSpec;
+import static specs.BaseSpec.baseResponseSpec;
+import static specs.BaseSpec.requestBaseSpec;
+
 
 public class UserList extends TestBase {
 
@@ -48,12 +49,10 @@ public class UserList extends TestBase {
     @Test
     void createUsersTest() {
 
-        UserBodyModel authData = new UserBodyModel();
-        authData.setName("Kir");
-        authData.setJob("QA");
+        UserRequestBodyModel authData = new UserRequestBodyModel("Kir", "QA");
 
-        UserBodyModel responce = step("Отправляем запрос", () ->
-                given(RequestCreateUsersSpec)
+        CreateUserResponseBodyModel response = step("Отправляем запрос", () ->
+                given(requestBaseSpec)
                 .header("x-api-key", apiKey)
                 .body(authData)
 
@@ -61,26 +60,25 @@ public class UserList extends TestBase {
                 .post("/users")
 
                 .then()
-                .spec(createUsersResponseSpec)
-                .extract().as(UserBodyModel.class));
+                .spec(baseResponseSpec(201))
+                .extract().as(CreateUserResponseBodyModel.class));
 
         step("Проверяем ответ", () -> {
-            assertEquals("Kir", responce.getName());
-            assertEquals("QA", responce.getJob());
-            assertNotNull(responce.getId());
-            assertNotNull(responce.getCreatedAt());
+            assertEquals("Kir", response.getName());
+            assertEquals("QA", response.getJob());
+            assertNotNull(response.getId());
+            assertNotNull(response.getCreatedAt());
         });
     }
+
 
     @Tag ("Smoke")
     @Test
     void updateUserTest() {
-        UserBodyModel authData = new UserBodyModel();
-        authData.setName("Kirill");
-        authData.setJob("QA Engineer");
+        UserRequestBodyModel authData = new UserRequestBodyModel("Kirill", "QA Engineer");
 
-        UserBodyModel responce = step("Отправляем запрос", () ->
-                given(RequestUpdateUsersSpec)
+        ResponseUserUpdateBodyModel response = step("Отправляем запрос", () ->
+                given(requestBaseSpec)
                 .header("x-api-key", apiKey)
                 .body(authData)
 
@@ -88,15 +86,15 @@ public class UserList extends TestBase {
                 .put("/users/2")
 
                 .then()
-                .spec(updateUsersResponseSpec)
-                .extract().as(UserBodyModel.class));
+                .spec(baseResponseSpec(200))
+                .extract().as(ResponseUserUpdateBodyModel.class));
 
         step("Проверяем ответ", () -> {
-            assertEquals("Kirill", responce.getName());
-            assertEquals("QA Engineer", responce.getJob());
-            assertNull(responce.getId());
-            assertNull(responce.getCreatedAt());
-            assertNotNull(responce.getUpdatedAt());
+            assertEquals("Kirill", response.getName());
+            assertEquals("QA Engineer", response.getJob());
+            assertNull(response.getId());
+            assertNull(response.getCreatedAt());
+            assertNotNull(response.getUpdatedAt());
         });
     }
 }

@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 
-public class RegisterResponseBodyModel {
-String token, id;
+public class RegisterRequestBodyModel {
+    String email, password;
 }

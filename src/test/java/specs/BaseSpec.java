@@ -10,15 +10,17 @@ import static io.restassured.filter.log.LogDetail.BODY;
 import static io.restassured.filter.log.LogDetail.STATUS;
 import static io.restassured.http.ContentType.JSON;
 
-public class createUsersSpec {
-    public static RequestSpecification RequestCreateUsersSpec = with()
+public class BaseSpec {
+    public static RequestSpecification requestBaseSpec = with()
             .filter(withCustomTemplates())
             .log().uri()
             .contentType(JSON);
 
-    public static ResponseSpecification createUsersResponseSpec = new ResponseSpecBuilder()
-            .log(STATUS)
-            .log(BODY)
-            .expectStatusCode(201)
-            .build();
+    public static ResponseSpecification baseResponseSpec(int statusCode) {
+        return new ResponseSpecBuilder()
+                .log(STATUS)
+                .log(BODY)
+                .expectStatusCode(statusCode)
+                .build();
+    }
 }

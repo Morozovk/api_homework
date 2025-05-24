@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-
-public class RegisterResponseBodyModel {
-String token, id;
+public class UserRequestBodyModel {
+   String name, job;
 }

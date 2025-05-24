@@ -1,5 +1,6 @@
 import models.ErrorResponseBodyModel;
-import models.RegisterBodyModel;
+import models.RegisterNotPasswordRequestBodyModel;
+import models.RegisterRequestBodyModel;
 import models.RegisterResponseBodyModel;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -7,9 +8,9 @@ import org.junit.jupiter.api.Test;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static specs.registrationSuccessfulSpec.registrationRequestSpec;
-import static specs.registrationSuccessfulSpec.registrationResponseSpec;
-import static specs.registrationUnSuccessfulSpec.*;
+import static specs.BaseSpec.baseResponseSpec;
+import static specs.BaseSpec.requestBaseSpec;
+
 
 public class RegistrationUser extends TestBase {
 
@@ -19,12 +20,10 @@ public class RegistrationUser extends TestBase {
     @Test
     void registrationSuccessfulLombokTest() {
 
-        RegisterBodyModel authData = new RegisterBodyModel();
-        authData.setEmail("eve.holt@reqres.in");
-        authData.setPassword("pistol");
+        RegisterRequestBodyModel authData = new RegisterRequestBodyModel("eve.holt@reqres.in", "pistol");
 
         RegisterResponseBodyModel response = step("Отправляем запрос", () ->
-                given(registrationRequestSpec)
+                given(requestBaseSpec)
                 .header("x-api-key", apiKey)
                 .body(authData)
 
@@ -32,7 +31,7 @@ public class RegistrationUser extends TestBase {
                 .post("/register")
 
                 .then()
-                .spec(registrationResponseSpec)
+                .spec(baseResponseSpec(200))
                 .extract().as(RegisterResponseBodyModel.class));
 
         step("Проверяем ответ", () -> {
@@ -41,14 +40,15 @@ public class RegistrationUser extends TestBase {
         });
     }
 
+
     @Tag ("Smoke")
     @Test
     void registrationUnSuccessfulNotPasswordLombokTest() {
-        RegisterBodyModel authData = new RegisterBodyModel();
-        authData.setEmail("eve.holt@reqres.in");
+        RegisterNotPasswordRequestBodyModel authData =
+                new RegisterNotPasswordRequestBodyModel("eve.holt@reqres.in");
 
-        ErrorResponseBodyModel responce = step("Отправляем запрос", () ->
-                given(registrationRequestUnSuccessfulSpec)
+        ErrorResponseBodyModel response = step("Отправляем запрос", () ->
+                given(requestBaseSpec)
                 .header("x-api-key", apiKey)
                 .body(authData)
 
@@ -56,11 +56,11 @@ public class RegistrationUser extends TestBase {
                 .post("/register")
 
                 .then()
-                .spec(registrationResponseUnSuccessfulSpec)
+                .spec(baseResponseSpec(400))
                 .extract().as(ErrorResponseBodyModel.class));
 
         step("Проверяем ответ", () -> {
-            assertEquals("Missing password", responce.getError());
+            assertEquals("Missing password", response.getError());
         });
     }
 
@@ -69,8 +69,8 @@ public class RegistrationUser extends TestBase {
     void registrationUnSuccessfulNotEmailLombokTest() {
         String failRegisterUser = "{}";
 
-        ErrorResponseBodyModel responce = step("Отправляем запрос", () ->
-                given(registrationRequestUnSuccessfulSpec)
+        ErrorResponseBodyModel response = step("Отправляем запрос", () ->
+                given(requestBaseSpec)
                 .header("x-api-key", apiKey)
                 .body(failRegisterUser)
 
@@ -78,11 +78,11 @@ public class RegistrationUser extends TestBase {
                 .post("/register")
 
                 .then()
-                .spec(registrationResponseUnSuccessfulSpec)
+                .spec(baseResponseSpec(400))
                 .extract().as(ErrorResponseBodyModel.class));
 
         step("Проверяем ответ", () -> {
-            assertEquals("Missing email or username", responce.getError());
+            assertEquals("Missing email or username", response.getError());
         });
     }
 }
